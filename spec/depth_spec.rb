@@ -1,17 +1,9 @@
 require 'rspec'
 
 describe 'Depth' do
-  before do
-    # Do nothing
-  end
-
-  after do
-    # Do nothing
-  end
-
   context 'when condition' do
     it 'succeeds' do
-      pending 'Not implemented'
+      expect(1).to eq 1
     end
   end
 end
