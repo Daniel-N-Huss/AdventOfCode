@@ -1,5 +1,5 @@
 require 'rspec'
-require '../solutions/d1_1'
+require_relative '../solutions/d1_1'
 
 RSpec.describe Depth do
   describe 'initialize' do
