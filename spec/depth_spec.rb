@@ -57,4 +57,40 @@ RSpec.describe Depth do
       it { is_expected.to eq 6 }
     end
   end
+
+  describe '.generate_measurement_windows' do
+    subject { described_class.new.generate_measurement_windows(depths) }
+
+    context 'array lengths' do
+      context 'when array has 3 elements' do
+        let(:depths) { [1, 2, 3] }
+
+        it 'returns one measurement' do
+          expect(subject.count).to eq 1
+        end
+
+        it { is_expected.to eq [6] }
+      end
+
+      context 'when array has 4 elements' do
+        let(:depths) { [1, 2, 3, 4] }
+
+        it 'returns 2 measurement' do
+          expect(subject.count).to eq 2
+        end
+
+        it { is_expected.to eq [6, 9] }
+      end
+
+      context 'when array has 7 elements' do
+        let(:depths) { [1, 2, 3, 4, 5, 6, 7] }
+
+        it 'returns 5 measurements' do
+          expect(subject.count).to eq 5
+        end
+
+        it { is_expected.to eq [6, 9, 12, 15, 18] }
+      end
+    end
+  end
 end

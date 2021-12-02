@@ -13,9 +13,19 @@ class Depth
     relative_depths.select { |depth| depth }.count
   end
 
-  def result
+  def relative_result
     puts count_increases(relative_increase(clean))
   end
+
+  def generate_measurement_windows(depths)
+    result = depths.map.with_index { |depth, index| [depth, depths[index + 1], depths[index + 2]] }
+    result[0...-2].map(&:sum)
+  end
+
+  def window_results
+    puts count_increases(relative_increase(generate_measurement_windows(clean)))
+  end
+
 end
 
-Depth.new.result
+Depth.new.window_results
