@@ -43,27 +43,27 @@ RSpec.describe Dive do
     context 'when instructions include "down"' do
       let(:test_data) { "down 2" }
 
-      it "increments the depth position" do
+      it "increments the position aim" do
         subject
-        expect(dive.position).to eq({ aim: 0, depth: 2, horizontal: 0 })
+        expect(dive.position).to eq({ aim: 2, depth: 0, horizontal: 0 })
       end
     end
 
     context 'when instructions include "up"' do
       let(:test_data) { "up 2" }
 
-      it "decrements the depth position" do
+      it "decrements the position aim" do
         subject
-        expect(dive.position).to eq({ aim: 0, depth: -2, horizontal: 0 })
+        expect(dive.position).to eq({ aim: -2, depth: 0, horizontal: 0 })
       end
     end
 
-    context 'when instructions include all directions' do
-      let(:test_data) { "down 4\nup 2\nforward 3" }
+    context 'when instructions include both up and down' do
+      let(:test_data) { "down 4\nup 2" }
 
-      it "decrements the depth position" do
+      it "sums the aim position" do
         subject
-        expect(dive.position).to eq({ aim: 0, depth: 2, horizontal: 3 })
+        expect(dive.position).to eq({ aim: 2, depth: 0, horizontal: 0 })
       end
 
     end

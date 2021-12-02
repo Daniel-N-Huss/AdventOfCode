@@ -20,11 +20,11 @@ class Dive
       end
 
       if direction == "down"
-        position[:depth] += instruction.last.to_i
+        position[:aim] += instruction.last.to_i
       end
 
       if direction == "up"
-        position[:depth] -= instruction.last.to_i
+        position[:aim] -= instruction.last.to_i
       end
     end
   end
