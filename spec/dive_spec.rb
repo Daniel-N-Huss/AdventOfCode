@@ -23,7 +23,7 @@ RSpec.describe Dive do
     end
 
     it 'has a position measurement' do
-      expect(subject.position).to eq({depth: 0, horizontal: 0})
+      expect(subject.position).to eq({ aim: 0, depth: 0, horizontal: 0 })
     end
   end
 
@@ -36,7 +36,7 @@ RSpec.describe Dive do
 
       it "increments the horizontal position" do
         subject
-        expect(dive.position).to eq({ depth: 0, horizontal: 2 })
+        expect(dive.position).to eq({ aim: 0, depth: 0, horizontal: 2 })
       end
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Dive do
 
       it "increments the depth position" do
         subject
-        expect(dive.position).to eq({ depth: 2, horizontal: 0 })
+        expect(dive.position).to eq({ aim: 0, depth: 2, horizontal: 0 })
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Dive do
 
       it "decrements the depth position" do
         subject
-        expect(dive.position).to eq({ depth: -2, horizontal: 0 })
+        expect(dive.position).to eq({ aim: 0, depth: -2, horizontal: 0 })
       end
     end
 
@@ -63,7 +63,7 @@ RSpec.describe Dive do
 
       it "decrements the depth position" do
         subject
-        expect(dive.position).to eq({ depth: 2, horizontal: 3 })
+        expect(dive.position).to eq({ aim: 0, depth: 2, horizontal: 3 })
       end
 
     end

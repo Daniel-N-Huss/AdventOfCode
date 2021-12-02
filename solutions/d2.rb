@@ -2,9 +2,9 @@ class Dive
   attr_reader :clean
   attr_accessor :position
   def initialize(test_input = nil)
-    @input = test_input || File.open("../inputs/d2.txt").read
+    @input = test_input || File.open("./inputs/d2.txt").read
     @clean = cleanup
-    @position = { depth: 0, horizontal: 0 }
+    @position = { aim: 0, depth: 0, horizontal: 0 }
   end
 
   def cleanup
@@ -13,15 +13,17 @@ class Dive
 
   def evaluate_directions
     clean.each do |instruction|
-      if instruction.first == "forward"
+      direction = instruction.first
+
+      if direction == "forward"
         position[:horizontal] += instruction.last.to_i
       end
 
-      if instruction.first == "down"
+      if direction == "down"
         position[:depth] += instruction.last.to_i
       end
 
-      if instruction.first == "up"
+      if direction == "up"
         position[:depth] -= instruction.last.to_i
       end
     end
