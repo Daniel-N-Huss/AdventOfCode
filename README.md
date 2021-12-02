@@ -11,3 +11,15 @@ If you want to steal this setup:
 - `bundle install`
 
 Currently uses Ruby 2.7.2 because I had that installed. Feel free to change your gemfile to whatever version is convenient to you.
+
+Once you register on the website, you'll be given a selection of inputs to the problem.
+I've been saving those as a .txt file in a folder called `inputs` at the project root, then reading them
+in each response.
+
+Naming scheme:
+Each day has 2 problems, the base one and an extended problem once you solve it.
+All my file names will be the day, and the problem attached:
+
+ie. Day 1 files:
+d1_1
+d1_2
