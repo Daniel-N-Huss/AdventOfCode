@@ -7,5 +7,4 @@ class Depth
   def print
     puts @clean.inspect
   end
-
 end
