@@ -34,9 +34,33 @@ RSpec.describe Dive do
     context 'when instructions include "forward"' do
       let(:test_data) { "forward 2" }
 
-      it "increments the horizontal position" do
-        subject
-        expect(dive.position).to eq({ aim: 0, depth: 0, horizontal: 2 })
+      context 'when aim is 0' do
+        it "increments the horizontal position" do
+          subject
+          expect(dive.position).to eq({ aim: 0, depth: 0, horizontal: 2 })
+        end
+      end
+
+      context 'when aim is 2' do
+        before do
+          dive.position[:aim] = 2
+        end
+
+        it 'increments the horizontal position, and the depth by a multiplicative of aim' do
+          subject
+          expect(dive.position).to eq( { aim: 2, depth: 4, horizontal: 2 } )
+        end
+      end
+
+      context 'when aim is 4' do
+        before do
+          dive.position[:aim] = 4
+        end
+
+        it 'increments the horizontal position, and the depth by a multiplicative of aim' do
+          subject
+          expect(dive.position).to eq( { aim: 4, depth: 8, horizontal: 2 } )
+        end
       end
     end
 

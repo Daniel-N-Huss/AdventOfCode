@@ -14,17 +14,16 @@ class Dive
   def evaluate_directions
     clean.each do |instruction|
       direction = instruction.first
+      distance = instruction.last.to_i
 
-      if direction == "forward"
-        position[:horizontal] += instruction.last.to_i
-      end
-
-      if direction == "down"
-        position[:aim] += instruction.last.to_i
-      end
-
-      if direction == "up"
-        position[:aim] -= instruction.last.to_i
+      case direction
+      when "forward"
+        position[:horizontal] += distance
+        position[:depth] += ( position[:aim] * distance)
+      when "down"
+        position[:aim] += distance
+      when "up"
+        position[:aim] -= distance
       end
     end
   end
