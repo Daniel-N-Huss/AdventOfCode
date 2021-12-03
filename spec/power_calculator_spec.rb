@@ -22,8 +22,8 @@ RSpec.describe PowerCalculator do
       end
     end
 
-    it 'has a rate_collection measurement' do
-      expect(subject.rate_collection).to eq({ '0': [], "1": [], "2": [], '3': [], '4': [], '5': [], '6': [], '7': [], '8': [], '9': [], '10': [], '11': [] })
+    it 'has a power_rate_collection measurement' do
+      expect(subject.power_rate_collection).to eq({ '0': [], "1": [], "2": [], '3': [], '4': [], '5': [], '6': [], '7': [], '8': [], '9': [], '10': [], '11': [] })
     end
 
     it 'has a placeholder gamma rate' do
@@ -43,7 +43,7 @@ RSpec.describe PowerCalculator do
 
     it 'splits the input into the indexed rate_collection' do
       subject
-      expect(power_calculator.rate_collection).to eq({ '0': [1, 0], "1": [1, 1], "2": [0, 0], '3': [0, 0], '4': [0, 1], '5': [0, 1], '6': [0, 1], '7': [0, 1], '8': [0, 1], '9': [0, 0], '10': [0, 1], '11': [1, 1] })
+      expect(power_calculator.power_rate_collection).to eq({ '0': [1, 0], "1": [1, 1], "2": [0, 0], '3': [0, 0], '4': [0, 1], '5': [0, 1], '6': [0, 1], '7': [0, 1], '8': [0, 1], '9': [0, 0], '10': [0, 1], '11': [1, 1] })
 
     end
   end
@@ -71,7 +71,7 @@ RSpec.describe PowerCalculator do
     subject { power_calculator.reduce_rate_collection }
 
     before do
-      power_calculator.rate_collection = { '0': [1, 0, 0], "1": [1, 1, 1], "2": [0, 0, 1], '3': [0, 0, 0], '4': [0, 1, 1], '5': [0, 1, 0], '6': [0, 1, 1], '7': [0, 1, 0], '8': [0, 1, 1], '9': [0, 0, 0], '10': [0, 1, 1], '11': [1, 1, 1] }
+      power_calculator.power_rate_collection = { '0': [1, 0, 0], "1": [1, 1, 1], "2": [0, 0, 1], '3': [0, 0, 0], '4': [0, 1, 1], '5': [0, 1, 0], '6': [0, 1, 1], '7': [0, 1, 0], '8': [0, 1, 1], '9': [0, 0, 0], '10': [0, 1, 1], '11': [1, 1, 1] }
     end
 
     it 'sets the gamma rate' do
@@ -84,14 +84,14 @@ RSpec.describe PowerCalculator do
     end
   end
 
-  describe 'calculate' do
+  describe 'calculate_power' do
     let(:power_calculator) { described_class.new(test_data) }
     let(:test_data) { "110000000001\n010011111011\n111000011110" }
 
     # expected gamma from test input = 110000011011
     # expected epsilon from test input = 001111100100
 
-    subject { power_calculator.calculate }
+    subject { power_calculator.calculate_power }
 
     it 'processes input data, and returns the product of the gamma and epsilon measurements' do
       expect(subject).to eq 3086604
@@ -99,7 +99,5 @@ RSpec.describe PowerCalculator do
       # epsilon to decimal value = 996
       # 3099 * 996 = 3086604
     end
-
-
   end
 end
