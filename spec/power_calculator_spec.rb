@@ -7,7 +7,6 @@ RSpec.describe PowerCalculator do
 
   describe 'initialize' do
     context 'when no test data is provided' do
-
       it 'reads the input file, when no test data is attached' do
         expect(subject.clean.count).to be > 100
       end
@@ -22,8 +21,8 @@ RSpec.describe PowerCalculator do
       end
     end
 
-    it 'has a power_rate_collection measurement' do
-      expect(subject.power_rate_collection).to eq({ '0': [], "1": [], "2": [], '3': [], '4': [], '5': [], '6': [], '7': [], '8': [], '9': [], '10': [], '11': [] })
+    it 'has a rate_collection measurement' do
+      expect(subject.rate_collection).to eq({ '0': [], "1": [], "2": [], '3': [], '4': [], '5': [], '6': [], '7': [], '8': [], '9': [], '10': [], '11': [] })
     end
 
     it 'has a placeholder gamma rate' do
@@ -33,17 +32,25 @@ RSpec.describe PowerCalculator do
     it 'has a placeholder epsilon rate' do
       expect(subject.epsilon).to eq ""
     end
+
+    it 'has a placeholder oxygen rate' do
+      expect(subject.oxygen).to eq ""
+    end
+
+    it 'has a placeholder co2_scrubber rate' do
+      expect(subject.co2_scrubber).to eq ""
+    end
   end
 
   describe ".input_into_rate_collection" do
     let(:power_calculator) { described_class.new(test_data) }
     let(:test_data) { "110000000001\n010011111011" }
 
-    subject { power_calculator.input_into_rate_collection }
+    subject { power_calculator.input_into_rate_collection(power_calculator.clean) }
 
     it 'splits the input into the indexed rate_collection' do
       subject
-      expect(power_calculator.power_rate_collection).to eq({ '0': [1, 0], "1": [1, 1], "2": [0, 0], '3': [0, 0], '4': [0, 1], '5': [0, 1], '6': [0, 1], '7': [0, 1], '8': [0, 1], '9': [0, 0], '10': [0, 1], '11': [1, 1] })
+      expect(power_calculator.rate_collection).to eq({ '0': [1, 0], "1": [1, 1], "2": [0, 0], '3': [0, 0], '4': [0, 1], '5': [0, 1], '6': [0, 1], '7': [0, 1], '8': [0, 1], '9': [0, 0], '10': [0, 1], '11': [1, 1] })
 
     end
   end
@@ -71,7 +78,7 @@ RSpec.describe PowerCalculator do
     subject { power_calculator.reduce_rate_collection }
 
     before do
-      power_calculator.power_rate_collection = { '0': [1, 0, 0], "1": [1, 1, 1], "2": [0, 0, 1], '3': [0, 0, 0], '4': [0, 1, 1], '5': [0, 1, 0], '6': [0, 1, 1], '7': [0, 1, 0], '8': [0, 1, 1], '9': [0, 0, 0], '10': [0, 1, 1], '11': [1, 1, 1] }
+      power_calculator.rate_collection = { '0': [1, 0, 0], "1": [1, 1, 1], "2": [0, 0, 1], '3': [0, 0, 0], '4': [0, 1, 1], '5': [0, 1, 0], '6': [0, 1, 1], '7': [0, 1, 0], '8': [0, 1, 1], '9': [0, 0, 0], '10': [0, 1, 1], '11': [1, 1, 1] }
     end
 
     it 'sets the gamma rate' do
@@ -99,5 +106,13 @@ RSpec.describe PowerCalculator do
       # epsilon to decimal value = 996
       # 3099 * 996 = 3086604
     end
+  end
+
+  describe 'detect_oxygen' do
+    let(:power_calculator) { described_class.new(test_data) }
+    let(:test_data) { "11000\n00000\n11100\n11110" }
+    subject { power_calculator.detect_oxygen }
+
+    it { is_expected.to eq "11110" }
   end
 end
