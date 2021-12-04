@@ -11,7 +11,6 @@ RSpec.describe PowerCalculator do
         expect(subject.clean.count).to be > 100
       end
     end
-
     context 'when test data is provided' do
       let(:test_data) { "110000000001\n010011111011" }
 
@@ -43,15 +42,14 @@ RSpec.describe PowerCalculator do
   end
 
   describe ".input_into_rate_collection" do
-    let(:power_calculator) { described_class.new(test_data) }
-    let(:test_data) { "110000000001\n010011111011" }
+    let(:power_calculator) { described_class.new("placeholder") }
+    let(:test_data) { ["110000000001", "010011111011"] }
 
-    subject { power_calculator.input_into_rate_collection(power_calculator.clean) }
+    subject { power_calculator.input_into_rate_collection(test_data) }
 
     it 'splits the input into the indexed rate_collection' do
       subject
       expect(power_calculator.rate_collection).to eq({ '0': [1, 0], "1": [1, 1], "2": [0, 0], '3': [0, 0], '4': [0, 1], '5': [0, 1], '6': [0, 1], '7': [0, 1], '8': [0, 1], '9': [0, 0], '10': [0, 1], '11': [1, 1] })
-
     end
   end
 
@@ -70,6 +68,34 @@ RSpec.describe PowerCalculator do
       it { is_expected.to eq 1 }
     end
 
+    context 'when bits are even' do
+      let(:rate_count) { [1, 1, 0, 0] }
+
+      it { is_expected.to eq nil }
+    end
+
+  end
+
+  describe 'least_common_bit' do
+    subject { described_class.new.least_common_bit(rate_count) }
+
+    context 'with majority 0 bits' do
+      let(:rate_count) { [1, 0, 0] }
+
+      it { is_expected.to eq 1 }
+    end
+
+    context 'with majority 1 bits' do
+      let(:rate_count) { [1, 1, 0] }
+
+      it { is_expected.to eq 0 }
+    end
+
+    context 'when bits are even' do
+      let(:rate_count) { [1, 1, 0, 0] }
+
+      it { is_expected.to eq nil }
+    end
   end
 
   describe 'reduce_rate_collection' do
@@ -109,10 +135,59 @@ RSpec.describe PowerCalculator do
   end
 
   describe 'detect_oxygen' do
-    let(:power_calculator) { described_class.new(test_data) }
-    let(:test_data) { "11000\n00000\n11100\n11110" }
-    subject { power_calculator.detect_oxygen }
+    let(:power_calculator) { described_class.new("placeholder") }
+    let(:test_data) { ["10100", "00000", "11100", "11110"] }
+    subject { power_calculator.detect_oxygen(test_data) }
 
     it { is_expected.to eq "11110" }
+
+    context 'with a specific inputs' do
+      let(:power_calculator) { described_class.new("placeholder") }
+      subject { power_calculator.detect_oxygen(test_data) }
+
+      context 'when test data is 010, 000, 100' do
+        let(:test_data) { ["010", "000", "100"] }
+
+        it { is_expected.to eq "010" }
+      end
+
+      context 'when test data is 0100, 0000, 0001, 1000' do
+        let(:test_data) { ["0100", "0000", "0001", "1000"] }
+
+        it { is_expected.to eq "0001" }
+      end
+
+      context 'when test data is 111000111010, 111000111000' do
+        let(:test_data) { ['111000111010', '111000111000'] }
+
+        it { is_expected.to eq '111000111010' }
+      end
+    end
+  end
+
+  describe 'detect_carbon_scrubbing' do
+    let(:power_calculator) { described_class.new("placeholder") }
+    let(:test_data) { ["10", "10", "10", "10", "010", "011"] }
+    subject { power_calculator.detect_carbon_scrubbing(test_data) }
+
+    it { is_expected.to eq "010" }
+
+    describe 'with a specific input' do
+      let(:power_calculator) { described_class.new("placeholder") }
+      let(:test_data) { ["111000111010", "111000111000"] }
+      subject { power_calculator.detect_carbon_scrubbing(test_data) }
+
+      it { is_expected.to eq "111000111000" }
+    end
+
+  end
+
+  describe 'calculate_life_support_rating' do
+    let(:power_calculator) { described_class.new("110000000001\n010011111011\n111000011110") }
+    #3073,1275, 3614
+    subject { power_calculator.calculate_life_support_rating }
+
+    it { is_expected.to eq 4607850 } #3614 * 1275
+    #detect oxygen will select the third binary value, detect co2 scrubbing will select the second, multiply result
   end
 end
