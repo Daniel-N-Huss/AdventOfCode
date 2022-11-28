@@ -61,14 +61,6 @@ RSpec.describe Bingo do
     end
   end
 
-  # split out the list of call numbers, and game boards
-  # draw one number from the list at a time
-  # mark each number as drawn on all boards
-  # check if the board has a completed row
-  # score the board by
-  #   sum all unmarked numbers
-  #   multiply sum by the number that was called
-
   describe ".play" do
     subject { bingo.play }
 
