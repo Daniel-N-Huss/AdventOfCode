@@ -64,9 +64,28 @@ describe LineCharter do
   end
 end
 
-describe Line do
+describe LineFactory do
+  describe ".draw_line" do
+    subject { LineFactory.draw_line(coordinate_pair) }
+
+    context 'when x coordinates are the same at the start and end' do
+      let(:coordinate_pair) { [[2, 2], [2, 1]] }
+      it { is_expected.to be_a VerticalLine }
+    end
+
+    context 'when y coordinates are the same at the start and end' do
+      let(:coordinate_pair) { [[0, 9], [5, 9]] }
+      it { is_expected.to be_a HorizontalLine }
+    end
+
+    context 'when both x and y coordinates are different at start and end' do
+      let(:coordinate_pair) { [[5, 5], [8, 2]] }
+      it { is_expected.to be_a DiagonalLine }
+    end
+  end
+
   describe 'initialize' do
-    subject { Line.new(coordinate_pair) }
+    subject { LineFactory.draw_line(coordinate_pair) }
 
     let(:coordinate_pair) { [[0, 9], [5, 9]] }
 
@@ -74,33 +93,12 @@ describe Line do
       expect(subject.start_coords).to eq({ x: 0, y: 9 })
       expect(subject.end_coords).to eq({ x: 5, y: 9 })
     end
-
-    describe 'direction' do
-      subject { line.direction }
-
-      let(:line) { Line.new(coordinate_pair) }
-
-      context 'when x coordinates are the same at the start and end' do
-        let(:coordinate_pair) { [[2, 2], [2, 1]] }
-        it { is_expected.to eq 'VERTICAL' }
-      end
-
-      context 'when y coordinates are the same at the start and end' do
-        let(:coordinate_pair) { [[0, 9], [5, 9]] }
-        it { is_expected.to eq 'HORIZONTAL' }
-      end
-
-      context 'when both x and y coordinates are different at start and end' do
-        let(:coordinate_pair) { [[5, 5], [8, 2]] }
-        it { is_expected.to eq 'DIAGONAL' }
-      end
-    end
   end
 
   describe 'all_points' do
     subject { line.all_points }
 
-    let(:line) { Line.new(coordinate_pair) }
+    let(:line) { LineFactory.draw_line(coordinate_pair) }
 
     context 'when the line is horizontal' do
       let(:coordinate_pair) { [[0, 9], [3, 9]] }
