@@ -1,6 +1,6 @@
 class RucksackPacker
 
-  PRIORITY = %w[a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z]
+  PRIORITY = %w[no_zero_index_plz a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z]
 
   def initialize(packing_list)
     @packed_rucksacks = packing_list.split("\n")
@@ -15,29 +15,22 @@ class RucksackPacker
 
       mistakenly_packed_item = first_compartment.chars.intersection(second_compartment.chars).first
 
-      PRIORITY.find_index(mistakenly_packed_item) + 1
+      PRIORITY.find_index(mistakenly_packed_item)
     end.sum
   end
 
   def badge_item_priority
-    groups = []
-
-    (@packed_rucksacks.count / 3).times do
-      groups << @packed_rucksacks.shift(3)
-    end
+    groups = @packed_rucksacks.each_slice(3).to_a
 
     badges = groups.collect do |group|
       first_pack = group.first.chars
       second_pack = group[1].chars
       third_pack = group.last.chars
 
-      common_items = first_pack.intersection(second_pack)
-      other_common_items = second_pack.intersection(third_pack)
-
-      common_items.intersection(other_common_items).first
+      first_pack.intersection(second_pack, third_pack).first
     end
 
-    badges.collect { |badge| PRIORITY.find_index(badge) + 1 }.sum
+    badges.collect { |badge| PRIORITY.find_index(badge) }.sum
   end
 end
 
