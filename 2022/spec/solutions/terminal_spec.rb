@@ -63,9 +63,9 @@ RSpec.describe Directory do
         directory.files << file
       end
       it "sums it's own files" do
-        expect(directory.size).to eq 0
+        expect(directory.total_size).to eq 0
         subject
-        expect(directory.size).to eq 100
+        expect(directory.total_size).to eq 100
       end
     end
 
@@ -82,15 +82,15 @@ RSpec.describe Directory do
       end
 
       it "sums it's own files, and the total size of it's children" do
-        expect(directory.size).to eq 0
+        expect(directory.total_size).to eq 0
         subject
-        expect(directory.size).to eq 1100
+        expect(directory.total_size).to eq 1100
       end
     end
   end
 
-  describe "size_without_going_over" do
-    subject { directory.size_without_going_over(1000) }
+  describe "total_sizes_under" do
+    subject { directory.total_sizes_under(1000) }
 
     context "when directory has children" do
       let(:child_directory) { Directory.new("child", directory) }
@@ -114,8 +114,8 @@ RSpec.describe Directory do
     end
   end
 
-  describe "size_over_minimum" do
-    subject { directory.size_over_minimum(500) }
+  describe "total_sizes_over" do
+    subject { directory.total_sizes_over(500) }
 
     context "when directory has children" do
       let(:child_directory) { Directory.new("child", directory) }
