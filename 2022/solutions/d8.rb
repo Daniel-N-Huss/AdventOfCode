@@ -35,12 +35,11 @@ class TreeFarm
     tree_lookup.each do |location, tree_height|
       row, col = location.split("-")
 
-
       left_score = left_score_loop(col.to_i - 1, row, tree_height, tree_lookup)
       right_score = right_score_loop(col.to_i + 1, row, tree_height, tree_lookup)
       top_score = top_score_loop(col, row.to_i - 1, tree_height, tree_lookup)
       bottom_score = bottom_score_loop(col, row.to_i + 1, tree_height, tree_lookup)
-      
+
       tree_score = left_score * right_score * top_score * bottom_score
 
       if tree_score > max_score
@@ -51,8 +50,8 @@ class TreeFarm
     max_score
   end
 
-  def top_score_loop(col, new_row, tree_height, tree_lookup)
-    neighbour_height = tree_lookup["#{new_row}-#{col}"]
+  def top_score_loop(col, row, tree_height, tree_lookup)
+    neighbour_height = tree_lookup["#{row}-#{col}"]
 
       if neighbour_height < 0
         return 0
@@ -62,11 +61,11 @@ class TreeFarm
         return 1
       end
 
-    1 + top_score_loop(col, new_row - 1, tree_height, tree_lookup)
+    1 + top_score_loop(col, row - 1, tree_height, tree_lookup)
   end
 
-  def bottom_score_loop(col, new_row, tree_height, tree_lookup)
-    neighbour_height = tree_lookup["#{new_row}-#{col}"]
+  def bottom_score_loop(col, row, tree_height, tree_lookup)
+    neighbour_height = tree_lookup["#{row}-#{col}"]
 
       if neighbour_height < 0
         return 0
@@ -76,11 +75,11 @@ class TreeFarm
         return 1
       end
 
-    1 + bottom_score_loop(col, new_row + 1, tree_height, tree_lookup)
+    1 + bottom_score_loop(col, row + 1, tree_height, tree_lookup)
   end
 
-  def left_score_loop(new_col, row, tree_height, tree_lookup)
-    neighbour_height = tree_lookup["#{row}-#{new_col}"]
+  def left_score_loop(col, row, tree_height, tree_lookup)
+    neighbour_height = tree_lookup["#{row}-#{col}"]
 
       if neighbour_height < 0
         return 0
@@ -90,7 +89,7 @@ class TreeFarm
         return 1
       end
 
-    1 + left_score_loop(new_col - 1, row, tree_height, tree_lookup)
+    1 + left_score_loop(col - 1, row, tree_height, tree_lookup)
   end
 
   def right_score_loop(new_col, row, tree_height, tree_lookup)
