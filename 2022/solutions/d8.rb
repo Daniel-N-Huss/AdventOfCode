@@ -28,98 +28,19 @@ class TreeFarm
   def optimal_scenic_score
     tree_lookup = Hash.new(-1)
 
-    @tree_map.each_with_index do |row, row_index|
-      row.each_with_index do |tree, tree_index|
-        tree_lookup["#{row_index}-#{tree_index}"] = tree
-      end
-    end
+    map_layout_to_hash(tree_lookup)
 
     max_score = 0
 
     tree_lookup.each do |location, tree_height|
       row, col = location.split("-")
 
-      left_score = 0
 
-      loop = true
-      new_col = col.to_i - 1
-
-      while loop
-        neighbour_height = tree_lookup["#{row}-#{new_col}"]
-
-        if neighbour_height < 0
-          break
-        end
-
-        left_score += 1
-
-        new_col -= 1
-
-        if neighbour_height >= tree_height
-          break
-        end
-      end
-
-      right_score = 0
-
-      new_col = col.to_i + 1
-
-      while loop
-        neighbour_height = tree_lookup["#{row}-#{new_col}"]
-
-        if neighbour_height < 0
-          break
-        end
-
-        right_score += 1
-
-        new_col += 1
-
-        if neighbour_height >= tree_height
-          break
-        end
-      end
-
-      top_score = 0
-
-      new_row = row.to_i - 1
-
-      while loop
-        neighbour_height = tree_lookup["#{new_row}-#{col}"]
-
-        if neighbour_height < 0
-          break
-        end
-
-        top_score += 1
-
-        new_row -= 1
-
-        if neighbour_height >= tree_height
-          break
-        end
-      end
-
-      bottom_score = 0
-
-      new_row = row.to_i + 1
-
-      while loop
-        neighbour_height = tree_lookup["#{new_row}-#{col}"]
-
-        if neighbour_height < 0
-          break
-        end
-
-        bottom_score += 1
-
-        new_row += 1
-
-        if neighbour_height >= tree_height
-          break
-        end
-      end
-
+      left_score = left_score_loop(col.to_i - 1, row, tree_height, tree_lookup)
+      right_score = right_score_loop(col.to_i + 1, row, tree_height, tree_lookup)
+      top_score = top_score_loop(col, row.to_i - 1, tree_height, tree_lookup)
+      bottom_score = bottom_score_loop(col, row.to_i + 1, tree_height, tree_lookup)
+      
       tree_score = left_score * right_score * top_score * bottom_score
 
       if tree_score > max_score
@@ -128,6 +49,70 @@ class TreeFarm
     end
 
     max_score
+  end
+
+  def top_score_loop(col, new_row, tree_height, tree_lookup)
+    neighbour_height = tree_lookup["#{new_row}-#{col}"]
+
+      if neighbour_height < 0
+        return 0
+      end
+
+      if neighbour_height >= tree_height
+        return 1
+      end
+
+    1 + top_score_loop(col, new_row - 1, tree_height, tree_lookup)
+  end
+
+  def bottom_score_loop(col, new_row, tree_height, tree_lookup)
+    neighbour_height = tree_lookup["#{new_row}-#{col}"]
+
+      if neighbour_height < 0
+        return 0
+      end
+
+      if neighbour_height >= tree_height
+        return 1
+      end
+
+    1 + bottom_score_loop(col, new_row + 1, tree_height, tree_lookup)
+  end
+
+  def left_score_loop(new_col, row, tree_height, tree_lookup)
+    neighbour_height = tree_lookup["#{row}-#{new_col}"]
+
+      if neighbour_height < 0
+        return 0
+      end
+
+      if neighbour_height >= tree_height
+        return 1
+      end
+
+    1 + left_score_loop(new_col - 1, row, tree_height, tree_lookup)
+  end
+
+  def right_score_loop(new_col, row, tree_height, tree_lookup)
+    neighbour_height = tree_lookup["#{row}-#{new_col}"]
+
+      if neighbour_height < 0
+        return 0
+      end
+
+      if neighbour_height >= tree_height
+        return 1
+      end
+
+    1 + right_score_loop(new_col + 1, row, tree_height, tree_lookup)
+  end
+
+  def map_layout_to_hash(tree_lookup)
+    @tree_map.each_with_index do |row, row_index|
+      row.each_with_index do |tree, tree_index|
+        tree_lookup["#{row_index}-#{tree_index}"] = tree
+      end
+    end
   end
 
   private
