@@ -5,59 +5,41 @@ class TreeFarm
 
   def visible_trees_from_perimiter
 
-    left_view = @tree_map.map do |row|
-      row.each_with_index.map do |tree, index|
-        if index == 0
-          tree
-        else
-          highest_blocker = row[0..(index - 1)].max
-          tree > highest_blocker ? tree : nil
-        end
-      end
-    end
+    viewable_trees_from_left = map_visible_trees(@tree_map)
 
-    right_view = @tree_map.map do |row|
-      reverse = row.reverse
-      reverse.each_with_index.map do |tree, index|
-        if index == 0
-          tree
-        else
-          highest_blocker = reverse[0..(index - 1)].max
-          tree > highest_blocker ? tree : nil
-        end
-      end.reverse
-    end
-    
-    top_view = @tree_map.transpose.map do |column|
-      column.each_with_index.map do |tree, index|
-        if index == 0
-          tree
-        else
-          highest_blocker = column[0..(index - 1)].max
-          tree > highest_blocker ? tree : nil
-        end
-      end
-    end.transpose
+    arranged_for_right_view = @tree_map.collect(&:reverse)
+    viewable_trees_from_right = map_visible_trees(arranged_for_right_view).collect(&:reverse)
 
-    bottom_view = @tree_map.reverse.transpose.map do |column|
-      column.each_with_index.map do |tree, index|
-        if index == 0
-          tree
-        else
-          highest_blocker = column[0..(index - 1)].max
-          tree > highest_blocker ? tree : nil
-        end
-      end
-    end.transpose.reverse
+    arranged_for_top_view = @tree_map.transpose
+    viewable_trees_from_top = map_visible_trees(arranged_for_top_view).transpose
 
+    arranged_for_bottom_view = @tree_map.reverse.transpose
+    viewable_trees_from_bottom = map_visible_trees(arranged_for_bottom_view).transpose.reverse
 
-    unified_views = left_view.each_with_index.collect do |row, row_index|
+    unified_views = viewable_trees_from_left.each_with_index.collect do |row, row_index|
       row.each_with_index.collect do |tree, tree_index|
-        tree || top_view[row_index][tree_index] || right_view[row_index][tree_index] || bottom_view[row_index][tree_index]
+        tree || viewable_trees_from_top[row_index][tree_index] || viewable_trees_from_right[row_index][tree_index] || viewable_trees_from_bottom[row_index][tree_index]
       end
     end
 
     unified_views.flatten.compact.count
+  end
+
+  def map_visible_trees(tree_map)
+    tree_map.map do |tree_line|
+      visible_trees_in_line(tree_line)
+    end
+  end
+
+  def visible_trees_in_line(tree_line)
+    tree_line.each_with_index.map do |tree, index|
+      if index == 0
+        tree
+      else
+        highest_blocker = tree_line[0..(index - 1)].max
+        tree > highest_blocker ? tree : nil
+      end
+    end
   end
 
   def optimal_scenic_score
@@ -115,7 +97,6 @@ class TreeFarm
         end
       end
 
-
       top_score = 0
 
       new_row = row.to_i - 1
@@ -136,7 +117,6 @@ class TreeFarm
         end
       end
 
-
       bottom_score = 0
 
       new_row = row.to_i + 1
@@ -156,7 +136,6 @@ class TreeFarm
           break
         end
       end
-
 
       tree_score = left_score * right_score * top_score * bottom_score
 
