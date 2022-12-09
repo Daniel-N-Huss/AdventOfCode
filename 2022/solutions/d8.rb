@@ -25,23 +25,6 @@ class TreeFarm
     unified_views.flatten.compact.count
   end
 
-  def map_visible_trees(tree_map)
-    tree_map.map do |tree_line|
-      visible_trees_in_line(tree_line)
-    end
-  end
-
-  def visible_trees_in_line(tree_line)
-    tree_line.each_with_index.map do |tree, index|
-      if index == 0
-        tree
-      else
-        highest_blocker = tree_line[0..(index - 1)].max
-        tree > highest_blocker ? tree : nil
-      end
-    end
-  end
-
   def optimal_scenic_score
     tree_lookup = Hash.new(-1)
 
@@ -145,6 +128,25 @@ class TreeFarm
     end
 
     max_score
+  end
+
+  private
+
+  def map_visible_trees(tree_map)
+    tree_map.map do |tree_line|
+      visible_trees_in_line(tree_line)
+    end
+  end
+
+  def visible_trees_in_line(tree_line)
+    tree_line.each_with_index.map do |tree, index|
+      if index == 0
+        tree
+      else
+        highest_blocker = tree_line[0..(index - 1)].max
+        tree > highest_blocker ? tree : nil
+      end
+    end
   end
 end
 
