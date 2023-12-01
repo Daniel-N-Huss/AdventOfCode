@@ -7,11 +7,9 @@ class Calibrator
   end
 
   def call
-    calibrations = @input.split("\n")
-
-    calibrations.map do |line|
-      lookahead_ordered_matches = line.scan(matcher).flatten
-      "#{NumberParser.fetch(lookahead_ordered_matches.first)}#{NumberParser.fetch(lookahead_ordered_matches.last)}".to_i
+    @input.split("\n").map do |line|
+      possible_calibrations = line.scan(matcher).flatten
+      "#{NumberParser.fetch(possible_calibrations.first)}#{NumberParser.fetch(possible_calibrations.last)}".to_i
     end.sum
   end
 
