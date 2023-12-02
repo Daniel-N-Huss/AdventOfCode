@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Calibrator
-  def initialize(input, parse_text_numbers: false)
-    @input = input
-    @parse_text_based_numbers = parse_text_numbers
+  def initialize(raw_text, use_text_numbers: false)
+    @raw_text = raw_text
+    @use_text_numbers = use_text_numbers
   end
 
   def call
-    @input.split("\n").map do |line|
+    @raw_text.split("\n").map do |line|
       possible_calibrations = line.scan(matcher).flatten
       "#{NumberParser.fetch(possible_calibrations.first)}#{NumberParser.fetch(possible_calibrations.last)}".to_i
     end.sum
@@ -16,7 +16,7 @@ class Calibrator
   private
 
   def matcher
-    if @parse_text_based_numbers
+    if @use_text_numbers
       /(?=(one|two|three|four|five|six|seven|eight|nine|\d))/
     else
       /(?=(\d))/

@@ -48,7 +48,7 @@ RSpec.describe Calibrator do
     end
 
     context "when parsing text-based numbers" do
-      let(:calibrator) { Calibrator.new(sample_input, parse_text_numbers: true) }
+      let(:calibrator) { Calibrator.new(sample_input, use_text_numbers: true) }
       let(:sample_input) do
         <<~INPUT
           two1nine
