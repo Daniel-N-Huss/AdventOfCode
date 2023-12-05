@@ -1,9 +1,10 @@
 class IslandIslandAlminac
   attr_reader :seeds
 
-  def initialize(data)
+  def initialize(data, seed_ranges: false)
     @data = data
     @seeds = []
+    @seed_ranges = seed_ranges
   end
 
   CONVERSION_ORDER = %w[seed-to-soil soil-to-fertilizer fertilizer-to-water water-to-light light-to-temperature
@@ -12,7 +13,17 @@ class IslandIslandAlminac
   def parse_input
     charts = @data.split("\n\n")
 
-    @seeds = charts.first.split('seeds: ').last.split(' ').map(&:to_i)
+    seed_values = charts.first.split('seeds: ').last.split(' ').map(&:to_i)
+
+    if @seed_ranges
+      seed_values.each_slice(2) do |seed_range|
+        seed, range = seed_range
+        @seeds << [seed, (seed + range - 1)]
+      end
+
+    else
+      @seeds = seed_values
+    end
 
     maps = charts[1..-1]
     @setup_maps ||= maps.map do |map|
@@ -31,11 +42,32 @@ class IslandIslandAlminac
   def nearest_seed_location
     maps
 
-    @seeds.map do |seed|
-      CONVERSION_ORDER.reduce(seed) do |memo, step|
-        maps[step].convert(memo)
+    if @seed_ranges
+      start_location = 0
+      reverse_lookup = CONVERSION_ORDER.dup.reverse
+
+      loop do
+        seed_that_would_go_in_location = reverse_lookup.reduce(start_location) do |memo, step|
+          maps[step].reverse_lookup(memo)
+        end
+
+        @seeds.each do |seed_range|
+          min, max = seed_range
+
+          if seed_that_would_go_in_location >= min && seed_that_would_go_in_location <= max
+            return start_location
+          end
+        end
+
+        start_location += 1
       end
-    end.min
+    else
+      @seeds.map do |seed|
+        CONVERSION_ORDER.reduce(seed) do |memo, step|
+          maps[step].convert(memo)
+        end
+      end.min
+    end
   end
 
   class AlminacMap
@@ -51,11 +83,24 @@ class IslandIslandAlminac
       end
 
       if conversion_range
-        conversion_range[:conversions][source_value] ||= begin
+        conversion_range[:conversions][source_value] ||=
           conversion_range[:destination_range_min] + (source_value - conversion_range[:source_range_min])
-        end
       else
         source_value
+      end
+    end
+
+    def reverse_lookup(destination_value)
+      conversion_range = @conversion_ranges.values.find do |range|
+        range[:destination_range_min] <= destination_value && range[:destination_range_max] >= destination_value
+      end
+
+      if conversion_range
+
+        conversion_range[:conversions][destination_value] ||=
+        conversion_range[:source_range_min] + (destination_value - conversion_range[:destination_range_min])
+      else
+        destination_value
       end
     end
 

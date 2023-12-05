@@ -63,6 +63,15 @@ RSpec.describe IslandIslandAlminac do
 
       expect(alminac.seeds).to eq([79, 14, 55, 13])
     end
+
+    context "when using seed ranges" do
+      let(:alminac) { IslandIslandAlminac.new(test_data, seed_ranges: true) }
+
+      it "converts seed ranges into individual seeds" do
+        alminac.parse_input
+        expect(alminac.seeds).to eq([[79, 92], [55, 67]])
+      end
+    end
   end
 
   describe "#maps" do
@@ -90,16 +99,30 @@ RSpec.describe IslandIslandAlminac do
       expect(subject).to eq 35
     end
 
+    context "with seed ranges" do
+      subject { IslandIslandAlminac.new(test_data, seed_ranges: true).nearest_seed_location }
+
+      it "converts seed data to locations, and returns the smallest distance" do
+        expect(subject).to eq 46
+      end
+    end
+
     context "with input data" do
       let(:test_data) { File.read("./inputs/d5.txt") }
 
       it { is_expected.to eq 331445006 }
+
+      context "with seed ranges" do
+        subject { IslandIslandAlminac.new(test_data, seed_ranges: true).nearest_seed_location }
+
+        it { is_expected.to eq 6472060 }
+      end
     end
   end
 
   describe IslandIslandAlminac::AlminacMap do
 
-    let(:mappings) { [[42, 0, 7]] }
+    let(:mappings) { [[42, 0, 7], [90, 33, 2]] }
 
     describe "#initialize" do
       subject { IslandIslandAlminac::AlminacMap.new(mappings) }
@@ -126,6 +149,8 @@ RSpec.describe IslandIslandAlminac do
           expect(alminac.convert(0)).to eq 42
           expect(alminac.convert(1)).to eq 43
           expect(alminac.convert(6)).to eq 48
+
+          expect(alminac.convert(33)).to eq 90
         end
       end
 
@@ -133,6 +158,27 @@ RSpec.describe IslandIslandAlminac do
         it "returns the source value" do
           expect(alminac.convert(99)).to eq 99
           expect(alminac.convert(99000)).to eq 99000
+        end
+      end
+    end
+
+    context "#reverse_lookup" do
+      let(:alminac) { IslandIslandAlminac::AlminacMap.new(mappings) }
+
+      context "when a conversion exists in the range" do
+        it "returns the conversion" do
+          expect(alminac.reverse_lookup(42)).to eq 0
+          expect(alminac.reverse_lookup(43)).to eq 1
+          expect(alminac.reverse_lookup(48)).to eq 6
+
+          expect(alminac.reverse_lookup(90)).to eq 33
+        end
+      end
+
+      context "when a conversion does not exist" do
+        it "returns the source value" do
+          expect(alminac.reverse_lookup(99)).to eq 99
+          expect(alminac.reverse_lookup(99000)).to eq 99000
         end
       end
     end
