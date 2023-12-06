@@ -1,5 +1,6 @@
 class BoatChargeCalculator
   attr_reader :times, :distances
+
   def initialize(race_data, single_race: false)
     @race_data = race_data
     @times = []
@@ -11,16 +12,11 @@ class BoatChargeCalculator
     sectioned_data = @race_data.split("\n")
 
     if @single_race
-      @times << sectioned_data[0].sub("Time: ", "").gsub(" ", "").to_i
-      @distances << sectioned_data[1].sub("Distance: ", "").gsub(" ", "").to_i
+      @times << sectioned_data[0].sub('Time: ', '').gsub(' ', '').to_i
+      @distances << sectioned_data[1].sub('Distance: ', '').gsub(' ', '').to_i
     else
-      sectioned_data.each do |line|
-        if line.include?("Time:")
-          @times = line.split(" ")[1..-1].map(&:to_i)
-        elsif line.include?("Distance:")
-          @distances = line.split(" ")[1..-1].map(&:to_i)
-        end
-      end
+      @times.concat sectioned_data[0].sub('Time: ', '').split(' ').map(&:to_i)
+      @distances.concat sectioned_data[1].sub('Distance: ', '').split(' ').map(&:to_i)
     end
   end
 
@@ -31,11 +27,9 @@ class BoatChargeCalculator
       remaining_race_time = time - charge_for_time
       velocity = charge_for_time * 1
 
-      if (remaining_race_time * velocity) > distance
-        return charge_for_time
-      else
-        charge_for_time += 1
-      end
+      return charge_for_time if (remaining_race_time * velocity) > distance
+
+      charge_for_time += 1
     end
   end
 
@@ -46,17 +40,13 @@ class BoatChargeCalculator
       remaining_race_time = time - charge_for_time
       velocity = charge_for_time * 1
 
-      if (remaining_race_time * velocity) > distance
-        return charge_for_time
-      else
-        charge_for_time -= 1
-      end
-    end
+      return charge_for_time if (remaining_race_time * velocity) > distance
 
+      charge_for_time -= 1
+    end
   end
 
   def multiply_winning_charge_times
-
     winning_charge_times = @times.map.with_index do |time, index|
       distance = @distances[index]
       min_charge = find_min_winning_charge(time, distance)
