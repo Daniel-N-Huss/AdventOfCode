@@ -23,37 +23,24 @@ class BoatChargeCalculator
     @distances = distances
   end
 
-  def find_min_winning_charge(time, distance)
-    charge_for_time = 1
+  def find_range_of_winning_charges(time, distance)
+    times = (0..time).to_a
 
-    loop do
-      remaining_race_time = time - charge_for_time
-      velocity = charge_for_time * 1
-
-      return charge_for_time if (remaining_race_time * velocity) > distance
-
-      charge_for_time += 1
+    min_time = times.bsearch do |mid|
+      (time - mid) * mid > distance
     end
-  end
 
-  def find_max_winning_charge(time, distance)
-    charge_for_time = time
-
-    loop do
-      remaining_race_time = time - charge_for_time
-      velocity = charge_for_time * 1
-
-      return charge_for_time if (remaining_race_time * velocity) > distance
-
-      charge_for_time -= 1
+    max_time = times.reverse.bsearch do |mid|
+      (time - mid) * mid > distance
     end
+
+    [min_time, max_time]
   end
 
   def multiply_winning_charge_times
     winning_charge_times = @times.map.with_index do |time, index|
       distance = @distances[index]
-      min_charge = find_min_winning_charge(time, distance)
-      max_charge = find_max_winning_charge(time, distance)
+      min_charge, max_charge = find_range_of_winning_charges(time, distance)
 
       max_charge - min_charge + 1
     end

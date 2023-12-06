@@ -59,23 +59,13 @@ describe BoatChargeCalculator do
     end
   end
 
-  describe '#find_min_winning_charge' do
-    subject { calculator.find_min_winning_charge(time, distance) }
+  describe "#binary_search_for_winning_charges" do
+    subject { calculator.find_range_of_winning_charges(time, distance) }
     let(:time) { 7 }
     let(:distance) { 9 }
 
-    it 'returns the minimum charge time' do
-      expect(subject).to eq(2)
-    end
-  end
-
-  describe '#find_max_winning_charge' do
-    subject { calculator.find_max_winning_charge(time, distance) }
-    let(:time) { 7 }
-    let(:distance) { 9 }
-
-    it 'returns the minimum charge time' do
-      expect(subject).to eq(5)
+    it 'returns the minimum and maximum charge times' do
+      expect(subject).to eq([2, 5])
     end
   end
 end
