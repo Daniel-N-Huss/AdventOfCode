@@ -11,13 +11,16 @@ class BoatChargeCalculator
   def parse_input
     sectioned_data = @race_data.split("\n")
 
+    times = sectioned_data[0].sub('Time: ', '').split(' ').map(&:to_i)
+    distances = sectioned_data[1].sub('Distance: ', '').split(' ').map(&:to_i)
+
     if @single_race
-      @times << sectioned_data[0].sub('Time: ', '').gsub(' ', '').to_i
-      @distances << sectioned_data[1].sub('Distance: ', '').gsub(' ', '').to_i
-    else
-      @times.concat sectioned_data[0].sub('Time: ', '').split(' ').map(&:to_i)
-      @distances.concat sectioned_data[1].sub('Distance: ', '').split(' ').map(&:to_i)
+      times = [times.join.to_i]
+      distances = [distances.join.to_i]
     end
+
+    @times = times
+    @distances = distances
   end
 
   def find_min_winning_charge(time, distance)
