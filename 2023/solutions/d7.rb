@@ -16,28 +16,14 @@ class CamelCardScorer
   def sort_hands_by_strength
     @hands = parse_input
     @hands.sort do |hand1, hand2|
-      cards1, _rank1 = hand1
-      cards2, _rank2 = hand2
+      cards1 = hand1.first
+      cards2 = hand2.first
 
       cards1_strength = evaluate_hand(cards1)
       cards2_strength = evaluate_hand(cards2)
 
       if cards1_strength == cards2_strength
-        order = @wild_j ? %w[J 2 3 4 5 6 7 8 9 T Q K A] : %w[2 3 4 5 6 7 8 9 T J Q K A]
-        tiebreaker = 0
-
-        (0..4).to_a.each do |i|
-          c1_value = order.find_index(cards1[i])
-          c2_value = order.find_index(cards2[i])
-
-          if c1_value != c2_value
-            tiebreaker = c1_value - c2_value
-
-            break
-          end
-        end
-
-        tiebreaker
+        tiebreak(cards1, cards2)
       else
         cards1_strength - cards2_strength
       end
@@ -49,60 +35,14 @@ class CamelCardScorer
 
     type_count = card_types.count
     wild_count = cards.count('J')
+    highest_type_count = highest_type_count(card_types, cards)
 
-    if @wild_j && wild_count > 0
+    return 6 if type_count == 1 # 5 of a kind
 
-      if [1, 2].include?(type_count)
-        return 6 # five of a kind
-      end
-
-      if type_count == 3
-        highest_type_count = card_types.map do |type|
-          cards.count(type)
-        end.max
-
-        if highest_type_count == 2 && wild_count == 1
-          return 4
-        end
-
-        # ["888J5", 781], ["88844", 834], ["8887J", 582]
-
-        return 5 # 4 of a kind
-      end
-
-      if type_count == 4
-        return 3
-      end
-
-      if type_count == 5
-        return 1 # pair
-      end
-    end
-
-    case type_count
-    when 1
-      6 # five of a kind
-    when 2
-      most_cards_of_type = card_types.map do |type|
-        cards.count(type)
-      end.max
-
-      if most_cards_of_type == 4
-        5 # 4 of a kind
-      else
-        4 # full house
-      end
-    when 3
-      # 3 of a kind, or two pair
-      counts = card_types.map do |type|
-        cards.count(type)
-      end
-
-      counts.max
-    when 4
-      1 # pair
-    when 5
-      0 # high card
+    if @wild_j && wild_count >= 1
+      score_wildcard_hand(type_count, highest_type_count, wild_count)
+    else
+      score_hand(highest_type_count, type_count)
     end
   end
 
@@ -110,5 +50,65 @@ class CamelCardScorer
     @hands = parse_input
     @hands = sort_hands_by_strength
     @hands.each_with_index.reduce(0) { |memo, (hand, rank)| memo + (hand[1] * (rank + 1)) }
+  end
+
+  private
+
+  def tiebreak(cards1, cards2)
+    order = @wild_j ? %w[J 2 3 4 5 6 7 8 9 T Q K A] : %w[2 3 4 5 6 7 8 9 T J Q K A]
+    tiebreaker = 0
+
+    (0..4).to_a.each do |i|
+      c1_value = order.find_index(cards1[i])
+      c2_value = order.find_index(cards2[i])
+
+      if c1_value != c2_value
+        tiebreaker = c1_value - c2_value
+        break
+      end
+    end
+
+    tiebreaker
+  end
+
+  def highest_type_count(card_types, cards)
+    card_types.map do |type|
+      cards.count(type)
+    end.max
+  end
+
+  def score_hand(highest_type_count, type_count)
+    case type_count
+    when 2
+      if highest_type_count == 4
+        5 # 4 of a kind
+      else
+        4 # full house
+      end
+    when 3
+      # 3 of a kind, or two pair
+      highest_type_count
+    when 4
+      1 # pair
+    else
+      0 # high card
+    end
+  end
+
+  def score_wildcard_hand(type_count, highest_type_count, wild_count)
+    case type_count
+    when 2
+      6 # 5 of a kind
+    when 3
+      if !(highest_type_count == 2 && wild_count == 1)
+        5 # 4 of a kind
+      else
+        4 # full house
+      end
+    when 4
+      3 # 3 of a kind
+    else
+      1 # pair
+    end
   end
 end
